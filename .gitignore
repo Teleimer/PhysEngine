@@ -72,6 +72,15 @@ CMakeUserPresets.json
 # Ignore all local history of files
 .history
 .ionide
+# Ignore everything inside .vscode
+.vscode/*
+
+# Keep shared build and debug settings
+!.vscode/tasks.json
+!.vscode/launch.json
+
+# Explicitly ignore local C++ IntelliSense paths
+.vscode/c_cpp_properties.json
 
 #!! ERROR: vscode is undefined. Use list command to see defined gitignore types !!#
 
