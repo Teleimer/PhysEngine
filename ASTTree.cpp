@@ -9,7 +9,7 @@ enum class OpCode
     SUB,
     MULT,
     DIV,
-    POWER,
+    POWER
 };
 
 enum class OperandType
@@ -17,7 +17,6 @@ enum class OperandType
     NUMBER,
     VARIABLE,
     DESTINATION
-
 };
 
 struct Operand
@@ -26,8 +25,6 @@ struct Operand
     std::variant<std::string, double> value;
     Operand(OperandType type, std::variant<std::string, double> value) :
         type(type), value(value){};
-    // Operand(OperandType type, double value) :
-    //    type(type), value(value){};
 };
 
 
@@ -118,6 +115,7 @@ std::vector<Instruction> generate_tac(const std::vector<Token>& postfix_array)
     std::vector<Instruction> tac_array;
     tac_array.reserve(postfix_array.size());
     size_t current = 0;
+    size_t dest_id = 0;
 
     while (current < postfix_array.size())
     {
@@ -138,7 +136,10 @@ std::vector<Instruction> generate_tac(const std::vector<Token>& postfix_array)
             containers.pop();
             Operand left = containers.top();
             containers.pop();
-            Operand destination = Operand (OperandType::DESTINATION, "t0");
+            Operand destination = Operand (
+                OperandType::DESTINATION, 
+                "t"+std::to_string(dest_id));
+                dest_id ++;
             OpCode op = convert_operation_type(current_token.type);
             Instruction next_instruction = 
             {
@@ -153,9 +154,16 @@ std::vector<Instruction> generate_tac(const std::vector<Token>& postfix_array)
         current++;
     }
     return tac_array;
-}
+};
 
 //evaluate the TAC vector
+std::variant<std::string, double> eval_tac(const std::vector<Instruction>& tac_vector)
+{
+
+}
+
+
+
 
 //simplify tree by math
 
@@ -164,7 +172,7 @@ std::vector<Instruction> generate_tac(const std::vector<Token>& postfix_array)
 
 
 //flatten input equation to array
-std::vector<Token> eq_to_postfix(std::string input_formula)
+std::vector<Instruction> eq_to_postfix(std::string input_formula)
 //still need to clean up, just a draft to make main small as possible
 {
     //innits
@@ -172,6 +180,7 @@ std::vector<Token> eq_to_postfix(std::string input_formula)
     tokens = parse_equation(input_formula);
     parser parsed_tree(tokens);
     auto head = parsed_tree.get_head_node();
+    std::vector<Instruction> tac_arr;
     
     //if to call helpers
     if (head)
@@ -180,11 +189,11 @@ std::vector<Token> eq_to_postfix(std::string input_formula)
         flattened_vector.reserve(parsed_tree.get_nodes_length());
         flattened_vector = flatten_postfix(*head, parsed_tree.get_nodes_length());
         const auto& next = generate_tac(flattened_vector);
-        return flattened_vector;
+        return next;
     }
     else
     {
-        return tokens;
+        return tac_arr;
     };
     
 };
@@ -192,7 +201,8 @@ std::vector<Token> eq_to_postfix(std::string input_formula)
 
 int main(){
     std::string input_formula = "3x+2^3*(-1+666)";
-    std::vector<Token> postfix_vector = eq_to_postfix(input_formula);
+    std::vector<Instruction> postfix_vector;
+    postfix_vector = eq_to_postfix(input_formula);
     //postfix_vector = eq_to_postfix(input_formula);
     std::cout << "All done generating nodes \n\n";
     return 10;
