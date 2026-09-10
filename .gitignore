@@ -86,3 +86,13 @@ CMakeUserPresets.json
 
 # End of https://www.toptal.com/developers/gitignore/api/c++,cmake,vscode,visualstudiocode
 ASTTree.cpp
+
+# Compiled binaries
+ASTTree
+TACprogram
+
+# Debug symbols
+*.dSYM/
+
+# Editor configs
+.vscode/
