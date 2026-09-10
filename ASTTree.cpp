@@ -38,6 +38,16 @@ struct Instruction
         operation(operation), source_1(s1), source_2(s2), destination(destination){};
 };
 
+struct TACInstruction
+{
+    int operation;
+    int left_i;
+    int right_i;
+    int dest_i;
+    TACInstruction(int operation, int left_i, int right_i, int dest_i):
+        operation(operation), left_i(left_i), right_i(right_i), dest_i(dest_i){};
+};
+
 OpCode convert_operation_type(TokenType toketype)
 {
     switch(toketype)
@@ -107,8 +117,8 @@ std::vector<Token> flatten_postfix(const ASTNode& head_node, size_t len_nodes)
 
 
 
-//flatten to TAC (three address code) array
-std::vector<Instruction> generate_tac(const std::vector<Token>& postfix_array)
+//flatten to TAC (three address code) array readable for troubleshooting
+std::vector<Instruction> generate_instructions(const std::vector<Token>& postfix_array)
 {
     std::stack<Operand> containers;
     //containers.reserve(postfix_array.size());
@@ -156,12 +166,12 @@ std::vector<Instruction> generate_tac(const std::vector<Token>& postfix_array)
     return tac_array;
 };
 
+
+//flatten to TACInstruction -- vectorized for eval
+std::vector<TACInstruction> f;
+
 //evaluate the TAC vector
-std::variant<std::string, double> eval_tac(const std::vector<Instruction>& tac_vector)
-{
-
-}
-
+// std::vector<TACInstruct> eval_tac(const std::vector<Instruction>& tac_vector)
 
 
 
@@ -188,7 +198,7 @@ std::vector<Instruction> eq_to_postfix(std::string input_formula)
         std::vector<Token> flattened_vector;
         flattened_vector.reserve(parsed_tree.get_nodes_length());
         flattened_vector = flatten_postfix(*head, parsed_tree.get_nodes_length());
-        const auto& next = generate_tac(flattened_vector);
+        const auto& next = generate_instructions(flattened_vector);
         return next;
     }
     else
