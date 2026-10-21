@@ -90,6 +90,7 @@ ASTTree.cpp
 # Compiled binaries
 ASTTree
 TACprogram
+Parser
 
 # Debug symbols
 *.dSYM/
