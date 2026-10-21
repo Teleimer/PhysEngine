@@ -27,6 +27,54 @@ std::vector<Token>& flatten_postfix_helper(
         postfix_array.emplace_back(TokenType::NUMBER, -1.0);
         postfix_array.emplace_back(TokenType::MULT);
     }
+    else if (subtree_head.type_ == TokenType::POWER)
+    {
+        const auto& current_node = static_cast<const OperatorNode&>(subtree_head);
+        flatten_postfix_helper(*current_node.left_, postfix_array);
+        flatten_postfix_helper(*current_node.right_, postfix_array);
+
+        const auto& current_right = static_cast <const NumberNode&>(*current_node.right_);
+        const auto& current_left = static_cast <const NumberNode&> (*current_node.left_);
+        if (current_right.value_ > 1 || current_right.value_ < -1)
+        {
+            postfix_array.pop_back();
+        }
+        if (current_right.value_ == 0)
+        {
+            postfix_array.pop_back();
+            postfix_array.pop_back();
+            postfix_array.emplace_back(TokenType::NUMBER, 1.0);
+
+        } 
+        else if (current_right.value_ == -1) 
+        //incomplete for power -1
+        {
+            postfix_array.emplace_back(TokenType::DIV);
+        }
+        else if (current_right.value_ < 0)
+        {
+            for (double i=0; i > current_right.value_; i--)
+            {
+                
+                postfix_array.emplace_back(TokenType::DIV);
+                postfix_array.emplace_back(TokenType::NUMBER, current_left.value_);
+            };
+        }
+        else if (current_right.value_ > 1)
+        {
+        
+            for (double i=1; i < current_right.value_; i++)
+            {
+                postfix_array.emplace_back(TokenType::NUMBER, current_left.value_);
+            }
+            for (double i=1; i < current_right.value_; i++)
+            {
+                postfix_array.emplace_back(TokenType::MULT);
+            }
+        };
+        return postfix_array;
+        
+    }
     else 
     // operators
     {
@@ -37,14 +85,14 @@ std::vector<Token>& flatten_postfix_helper(
         {  
                 flatten_postfix_helper(*current_node.left_, postfix_array); 
         }
-        
+       
         //traverse right
         if (current_node.right_)
         {
             flatten_postfix_helper(*current_node.right_, postfix_array);
         };
-
         postfix_array.emplace_back(current_node.type_);
+        
     };
 
     return postfix_array;

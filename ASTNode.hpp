@@ -17,6 +17,7 @@ struct NumberNode : public ASTNode
 {
     double value_;
     NumberNode(double value) : ASTNode(TokenType::NUMBER),value_(value){}; //constructor for NumberNode -- takes one argument a value of type double
+    // instruction for set a new value in a number node. need .set for multiple node types on simplification
 };
 
 struct VariableNode: public ASTNode

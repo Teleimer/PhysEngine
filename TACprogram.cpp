@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cmath>
 #include <string>
 #include "Parser.hpp"
 #include "Tokens.hpp"
@@ -108,39 +109,38 @@ struct TACProgram
 
     std::vector<double> execute_tac()
     {
+        //outer loop is each instruction
         for (const TACInstruction& instruction : instructions)
         {
-            double left = instruction.left_i;
-            double right = instruction.right_i;
+            // pull out pointers for faster execution
+            const double* left = registers[instruction.left_i].data();
+            const double* right = registers[instruction.right_i].data();
+            double* destination = registers[instruction.dest_i].data();
 
+            // inner loop is all x elements in the vector at each register
             for (size_t i=0; i < number_loops; i++)
             {
                 switch(instruction.operation)
                 {
                     case OpCode::ADD: 
-                        registers[instruction.dest_i][i] = 
-                            registers[left][i] + registers[right][i];
+                        destination[i] = left[i] + right[i];
                         break;
 
                     case OpCode::SUB:
-                        registers[instruction.dest_i][i] = 
-                            registers[left][i] - registers[right][i];
+                        destination[i] = left[i] - right[i];
                         break;
 
                     case OpCode::MULT:
-                        registers[instruction.dest_i][i] = 
-                            registers[left][i] * registers[right][i];
+                        destination[i] = left[i] * right[i];
                         break;
 
                     case OpCode::DIV:
-                        registers[instruction.dest_i][i] = 
-                            registers[left][i] / registers[right][i];
+                        destination[i] = left[i] / right[i];
                         break;
                     
                     case OpCode::POWER:
                         // needs optimizing
-                        registers[instruction.dest_i][i] = 
-                            std::pow(registers[left][i], registers[right][i]);
+                        destination[i] = std::pow(left[i], right[i]);
                         break;
                 };
             };
@@ -153,8 +153,9 @@ struct TACProgram
 
 
     private:
+        // handle generation of register indexes    
         int get_or_assign(std::string value, size_t& current_var, bool is_num=false, 
-                          bool is_var=false)
+                          bool is_var=false) 
         {
             auto key = register_map.find(value);
             
@@ -194,24 +195,16 @@ struct TACProgram
                 return reg_index;
             };
         };
-};
+    };
 
 
 
 
-
-
-
-//flatten to TACInstruction -- vectorized for eval
-
-
-//evaluate the TAC vector
-
-
+//Need to still handle negative and fractional powers. That is not effectively updated.
 
 int main()
 {
-    std::string input_formula = "3x+2";
+    std::string input_formula = "2^3+5x";
     std::vector<Token> postfix_vector;
     std::vector<std::vector<double>> var_vals;
     std::vector<double> input_var = {0,1,2,3,4,5,6,7};

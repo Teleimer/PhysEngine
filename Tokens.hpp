@@ -119,14 +119,14 @@ std::vector<Token> parse_equation(std::string equation)
         else
         {
             tokens.emplace_back(current_type, current_val);
-        }
+        };
         
-        //handle numvar i.e. 5x
-        if ((get_type(*(current_char+1)) == TokenType::VARIABLE) && (current_type == TokenType::NUMBER)) 
+            //handle numvar i.e. 5x
+        if ((get_type(*(current_char+1)) == TokenType::VARIABLE) && (current_type == TokenType::NUMBER) && current_char+1 < last_char) 
         {
                 tokens.emplace_back(TokenType::MULT, "*");
         }
-        else if ((get_type(*(current_char+1)) == TokenType::NUMBER) && (current_type == TokenType::VARIABLE)) 
+        else if ((get_type(*(current_char+1)) == TokenType::NUMBER) && (current_type == TokenType::VARIABLE)&& current_char+1 < last_char) 
         {
                 tokens.emplace_back(TokenType::MULT, "*");
         }
@@ -138,6 +138,8 @@ std::vector<Token> parse_equation(std::string equation)
                 tokens.emplace_back(TokenType::MULT, "*");
             };
         }
+        
+        
         current_char ++;
         token_start = current_char;
 
