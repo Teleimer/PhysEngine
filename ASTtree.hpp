@@ -98,6 +98,9 @@ std::vector<Token>& flatten_postfix_helper(
     return postfix_array;
 };
 
+//upcoming feature
+//std::vector<Token> reduce_expression()
+
 
 //flatten to postfix token array
 std::vector<Token> flatten_postfix(const ASTNode& head_node, size_t len_nodes)
@@ -123,6 +126,7 @@ std::vector<Token> eq_to_postfix(std::string input_formula)
     //if to call helpers
     if (head)
     {
+        
         flattened_vector.reserve(parsed_tree.get_nodes_length());
         flattened_vector = flatten_postfix(*head, parsed_tree.get_nodes_length());
         return flattened_vector;
@@ -130,7 +134,7 @@ std::vector<Token> eq_to_postfix(std::string input_formula)
     return flattened_vector;
 };
 
-//simplify tree by math
+
 
 //prep for integration, derivation, etc 
 

@@ -46,13 +46,22 @@ struct TACProgram
     std::vector<TACInstruction> instructions;
     std::unordered_map<std::string, int> register_map;
     std::vector<std::vector<double>> registers;
-    std::vector<std::vector<double>> variable_values;
+    std::vector<std::vector<double>> variable_values_; 
+    std::vector<double> xo_values;
+    std::vector<double> yo_values;
+    std::vector<double> vo_values;
     std::vector<double> evaluated_solutions;
+    double total_time;
     double number_loops;
     TACProgram(std::vector<Token>postfix_tokens, 
-               std::vector<std::vector<double>> variable_values) :
+               std::vector<std::vector<double>> variable_values,
+               double total_time) :
                     postfix_vector(std::move(postfix_tokens)),
-                    variable_values(variable_values)
+                    variable_values_(variable_values),
+                    xo_values(variable_values[0]),
+                    yo_values(variable_values[1]),
+                    vo_values(variable_values[2]),
+                    total_time(total_time)
     {
         //innits and trackers
         instructions.reserve(postfix_vector.size());
@@ -118,32 +127,49 @@ struct TACProgram
             double* destination = registers[instruction.dest_i].data();
 
             // inner loop is all x elements in the vector at each register
-            for (size_t i=0; i < number_loops; i++)
+            //for (size_t t=0; t< total_time; t++)
             {
                 switch(instruction.operation)
                 {
                     case OpCode::ADD: 
-                        destination[i] = left[i] + right[i];
+                        for(size_t i=0; i < number_loops; i++)
+                        {
+                            destination[i] = left[i] + right[i];
+                        }
                         break;
 
                     case OpCode::SUB:
-                        destination[i] = left[i] - right[i];
+                         for(size_t i=0; i < number_loops; i++)
+                        {    
+                            destination[i] = left[i] - right[i];
+                        }
                         break;
 
                     case OpCode::MULT:
-                        destination[i] = left[i] * right[i];
+                         for(size_t i=0; i < number_loops; i++)
+                        {
+                            destination[i] = left[i] * right[i];
+                        }
                         break;
 
                     case OpCode::DIV:
-                        destination[i] = left[i] / right[i];
+                         for(size_t i=0; i < number_loops; i++)
+                        {
+                            destination[i] = left[i] / right[i];
+                        }
                         break;
                     
                     case OpCode::POWER:
                         // needs optimizing
-                        destination[i] = std::pow(left[i], right[i]);
+                         for(size_t i=0; i < number_loops; i++)
+                        {
+                            destination[i] = std::pow(left[i], right[i]);
+                        }
                         break;
                 };
+                
             };
+            //need to enter here updates to which array is fed into the variables for new loops
         };
         return registers[instructions.back().dest_i];
       };
@@ -180,7 +206,7 @@ struct TACProgram
                 }
                 else if (is_var)
                 {
-                    std::vector<double> var_vals = variable_values[current_var];
+                    std::vector<double> var_vals = variable_values_[current_var];
                     registers.push_back(var_vals);
                     
                 }
@@ -204,13 +230,17 @@ struct TACProgram
 
 int main()
 {
-    std::string input_formula = "2^3+5x";
+    std::string input_formula = "2x+y-v";
     std::vector<Token> postfix_vector;
     std::vector<std::vector<double>> var_vals;
-    std::vector<double> input_var = {0,1,2,3,4,5,6,7};
-    var_vals.push_back(input_var);
+    std::vector<double> yo_var = {0,1,2,3,4,5,6,7};
+    std::vector<double> xo_var = {0,0,0,0,0,0,0,0};
+    std::vector<double> vo_var = {0,10,20,30,40,50,60,70};
+    var_vals.push_back(xo_var);
+    var_vals.push_back(yo_var);
+    var_vals.push_back(vo_var);
     postfix_vector = eq_to_postfix(input_formula);
-    TACProgram current_program = TACProgram (postfix_vector, var_vals);
+    TACProgram current_program = TACProgram (postfix_vector, var_vals, 10);
     std::vector<double> solution;
     solution = current_program.execute_tac();
     std::cout << "All done generating nodes \n\n";
