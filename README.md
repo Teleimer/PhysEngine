@@ -13,7 +13,9 @@ ARCHITECTURE
 ONGOING
 >managing power evaluation to not rely on power function in TAC loop
 >simplification of expression / derivation prep through tree operations
->execution loop scaling -- multiple input vectors and looping over t, to actually facilitate sim
+>Modularize TACexecution functions:
+  >>execution loop scaling -- multiple input vectors
+  >>looping over t, to actually facilitate sim
 >build library of default functions
 >modify execution entry points -- personal function // library functions
 
