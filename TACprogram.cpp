@@ -243,6 +243,11 @@ int main()
     TACProgram current_program = TACProgram (postfix_vector, var_vals, 10);
     std::vector<double> solution;
     solution = current_program.execute_tac();
+    std::cout << "Results: ";
+    for (double val : solution) 
+    {
+    std::cout << val << " ";
+    };
     std::cout << "All done generating nodes \n\n";
 
 }
